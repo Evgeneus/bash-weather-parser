@@ -1,0 +1,19 @@
+#!/bin/bash
+
+
+while [ true ]; do
+
+	#Checking internet connection
+	ping 8.8.8.8 -c 5 -w 15  &>/dev/null
+	result=$?
+
+	if [ "$result" -eq 2 ]; then
+		echo "Could not resolve 8.8.8.8"
+	elif [ "$result" -eq 1 ]; then
+		echo "Could not reach 8.8.8.8"
+	#else echo "Internet connection is successful"
+	fi
+ 	echo $result
+    	sleep 1
+done
+
