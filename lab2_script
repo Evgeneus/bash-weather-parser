@@ -1,19 +1,25 @@
 #!/bin/bash
 
-
 while [ true ]; do
 
 	#Checking internet connection
 	ping 8.8.8.8 -c 5 -w 15  &>/dev/null
 	result=$?
-
 	if [ "$result" -eq 2 ]; then
 		echo "Could not resolve 8.8.8.8"
 	elif [ "$result" -eq 1 ]; then
 		echo "Could not reach 8.8.8.8"
 	#else echo "Internet connection is successful"
 	fi
- 	echo $result
-    	sleep 1
+ 	#echo $result
+
+	#get information about the weather
+	list=$(curl http://6.pogoda.by/26850 -silent | grep '</h3><p>' | iconv -f WINDOWS-1251 -t UTF-8  | sed -e 's/<\/h3>//g' | sed -e 's/<p>/!\r/g' | sed -e 's/<br>&#9642;/\r/g' | sed -e 's/<h3>//g' | sed -e 's/&deg;//g' |  sed -e 's/<br>/\r/g' | sed -e 's/<\/p>//g' | sed -e 's/&nbsp;/ /g')
+
+	echo -e "$list\n" >> pogoda
+	#show notification
+	notify-send "$list" "" -i gtk-about 
+
+    	sleep 3
 done
 
