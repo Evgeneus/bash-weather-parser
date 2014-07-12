@@ -1,14 +1,22 @@
 #!/bin/bash
 
+#check if the parameter
+if [ "$1" = "--help" ]; then 
+	echo -e " Script will inform you about weather in Minsk now.\n Information is taken from the 6.pogoda.by site.\n And the script is running in an infinite loop.\n  "
+fi
+
+#infinite loop
 while [ true ]; do
 
 	#Checking internet connection
-	ping 8.8.8.8 -c 5 -w 15  &>/dev/null
+	ping 6.pogoda.by -c 5 -w 15  &>/dev/null
 	result=$?
 	if [ "$result" -eq 2 ]; then
-		echo "Could not resolve 8.8.8.8"
+		echo "Could not resolve 6.pogoda.by"
+		exit 1
 	elif [ "$result" -eq 1 ]; then
-		echo "Could not reach 8.8.8.8"
+		echo "Could not reach 6.pogoda.by"
+		exit 2
 	#else echo "Internet connection is successful"
 	fi
  	#echo $result
