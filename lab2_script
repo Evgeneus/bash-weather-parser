@@ -1,14 +1,15 @@
 #!/bin/bash
 
-#check if the parameter
-if [ "$1" = "--help" ]; then 
-	echo -e " Script will inform you about weather in Minsk now.\n Information is taken from the 6.pogoda.by site.\n And the script is running in an infinite loop.\n  "
-fi
+trap bashtrap INT
 
-#infinite loop
-while [ true ]; do
+bashtrap()
+{
+	echo -e "\n CTRL+C is Detected!\n Goodbye!"
+	exit
+}
 
-	#Checking internet connection
+iconect()
+{
 	ping 6.pogoda.by -c 5 -w 15  &>/dev/null
 	result=$?
 	if [ "$result" -eq 2 ]; then
@@ -20,14 +21,36 @@ while [ true ]; do
 	#else echo "Internet connection is successful"
 	fi
  	#echo $result
+}
+
+winfo()
+{
+	list=$(curl http://6.pogoda.by/26850 -silent | grep '</h3><p>' | iconv -f WINDOWS-1251 -t UTF-8  | sed -e 's/<\/h3>//g' | sed -e 's/<p>/!\r/g' | sed -e 's/<br>&#9642;/\r/g' | sed -e 's/<h3>//g' | sed -e 's/&deg;//g' |  sed -e 's/<br>/\r/g' | sed -e 's/<\/p>//g' | sed -e 's/&nbsp;/ /g')
+}
+
+#check if the parameter
+if [ "$1" = "--help" ]; then 
+	echo -e " Script will inform you about weather in Minsk now.\n Information is taken from the 6.pogoda.by site.\n And the script is running in an infinite loop.\n Statistics about the weather will be saved in0 'pogoda' file.\n  "
+fi
+
+echo " If you want to close the application press 'CTRL+C'."
+
+var=`cat configure`
+
+#infinite loop
+while [ true ]; do
+
+	#Checking internet connection
+	iconect 
 
 	#get information about the weather
-	list=$(curl http://6.pogoda.by/26850 -silent | grep '</h3><p>' | iconv -f WINDOWS-1251 -t UTF-8  | sed -e 's/<\/h3>//g' | sed -e 's/<p>/!\r/g' | sed -e 's/<br>&#9642;/\r/g' | sed -e 's/<h3>//g' | sed -e 's/&deg;//g' |  sed -e 's/<br>/\r/g' | sed -e 's/<\/p>//g' | sed -e 's/&nbsp;/ /g')
+	winfo
 
 	echo -e "$list\n" >> pogoda
+
 	#show notification
 	notify-send "$list" "" -i gtk-about 
-
-    	sleep 3
+	
+	#delay
+    	sleep $var
 done
-
