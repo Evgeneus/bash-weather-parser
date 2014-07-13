@@ -30,17 +30,28 @@ winfo()
 
 #check if the parameter
 if [ "$1" = "--help" ]; then 
-	echo -e " Script will inform you about weather in Minsk now.\n Information is taken from the 6.pogoda.by site.\n And the script is running in an infinite loop.\n Statistics about the weather will be saved in0 'pogoda' file.\n  "
+	echo -e " Script will inform you about weather in Minsk now.\n Information is taken from the 6.pogoda.by site.\n And the script is running in an infinite loop.\n Statistics about the weather will be saved in 'pogoda' file.\n  "
 fi
 
-echo " If you want to close the application press 'CTRL+C'."
+fcheck()
+{
+	if [ -f configure ]; then
+		delay=`cat configure`
+	else
+		echo "configure file not found"
+		exit 3
+	fi
+}
 
-var=`cat configure`
+
+echo " If you want to close the application press 'CTRL+C'."
+#check existence of the configuration file
+fcheck
 
 #infinite loop
 while [ true ]; do
 
-	#Checking internet connection
+	#Check internet connection
 	iconect 
 
 	#get information about the weather
@@ -52,5 +63,5 @@ while [ true ]; do
 	notify-send "$list" "" -i gtk-about 
 	
 	#delay
-    	sleep $var
+    	sleep $delay
 done
